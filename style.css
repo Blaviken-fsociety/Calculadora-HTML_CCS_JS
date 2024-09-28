@@ -7,7 +7,6 @@
 
 body {
     min-height: 100vh;
-    background: -webkit-linear-gradient(to right, #3a1c71, #d76d77, #ffaf7b); /* Degradado púrpura-rosado */
     background: linear-gradient(to right, #3a1c71, #d76d77, #ffaf7b); /* Degradado púrpura-rosado */
     display: grid;
     place-items: center;
