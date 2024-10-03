@@ -41,6 +41,11 @@ body {
     font-weight: 600;
 }
 
+.operacion {
+    font-size: 1.2rem; /* Tamaño más pequeño para la operación */
+    color: #6D6875;    /* Cambiar el color de la operación */
+}
+
 .btn {
     background-color: #6D6875; /* Púrpura grisáceo */
     color: #FFFFFF; /* Texto blanco */  
@@ -59,11 +64,11 @@ body {
 
 #cero {
     grid-column: span 2;
-    background-color: #B5838D;
+    background-color: #6D6875; /* Púrpura grisáceo */
 }
 
 #c{
-    background-color: #B5838D; /* Púrpura rosado */
+    background-color: #B5838D;
 }
 
 #borrar{
@@ -87,7 +92,7 @@ body {
 }
 
 #deci{
-    background-color: #B5838D; /* Púrpura rosado */
+    background-color: #6D6875; /* Púrpura grisáceo */
 }
 
 #igual {
