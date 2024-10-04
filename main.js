@@ -1,47 +1,139 @@
+// Seleccionar elementos del DOM
 const pantalla = document.querySelector(".pantalla");
 const botones = document.querySelectorAll(".btn");
 
-let operacionActual = ""; // Variable para almacenar la operación actual
+// Variables para almacenar los operandos y el operador
+let operandoAnterior = '';
+let operandoActual = '';
+let operador = null;
+let seMostroResultado = false; // Indica si se mostró el resultado recientemente
 
+// Función para actualizar la pantalla
+function actualizarPantalla(valor) {
+    pantalla.textContent = valor;
+}
+
+// Función para limpiar la calculadora
+function limpiar() {
+    operandoActual = '';
+    operandoAnterior = '';
+    operador = null;
+    actualizarPantalla('0');
+}
+
+// Función para borrar el último carácter
+function borrar() {
+    if (seMostroResultado) {
+        limpiar();
+        seMostroResultado = false;
+        return;
+    }
+    operandoActual = operandoActual.slice(0, -1);
+    if (operandoActual === '') {
+        actualizarPantalla('0');
+    } else {
+        actualizarPantalla(operandoActual);
+    }
+}
+
+// Función para manejar la entrada de números
+function ingresarNumero(numero) {
+    if (seMostroResultado) {
+        operandoActual = '';
+        seMostroResultado = false;
+    }
+    if (numero === '.' && operandoActual.includes('.')) return; // Evitar múltiples decimales
+    operandoActual += numero;
+    actualizarPantalla(operandoActual);
+}
+
+// Función para manejar la selección de operadores
+function seleccionarOperador(op) {
+    if (operandoActual === '' && operandoAnterior === '') return;
+    if (operandoActual === '') {
+        operador = op;
+        return;
+    }
+    if (operandoAnterior !== '') {
+        calcular();
+    }
+    operador = op;
+    operandoAnterior = operandoActual;
+    operandoActual = '';
+}
+
+// Función para calcular el resultado
+function calcular() {
+    let resultado;
+    const anterior = parseFloat(operandoAnterior);
+    const actual = parseFloat(operandoActual);
+
+    if (isNaN(anterior) || isNaN(actual)) return;
+
+    switch (operador) {
+        case '+':
+            resultado = anterior + actual;
+            break;
+        case '-':
+            resultado = anterior - actual;
+            break;
+        case '*':
+            resultado = anterior * actual;
+            break;
+        case '/':
+            if (actual === 0) {
+                actualizarPantalla('Error!');
+                operandoActual = '';
+                operandoAnterior = '';
+                operador = null;
+                seMostroResultado = true;
+                return;
+            }
+            resultado = anterior / actual;
+            break;
+        default:
+            return;
+    }
+
+    actualizarPantalla(resultado);
+    operandoActual = resultado.toString();
+    operador = null;
+    operandoAnterior = '';
+    seMostroResultado = true;
+}
+
+// Asignar eventos a los botones
 botones.forEach(boton => {
-    boton.addEventListener("click", () => {
+    boton.addEventListener('click', () => {
         const botonApretado = boton.textContent;
 
-        // Reiniciar la pantalla si se presiona 'C'
-        if (boton.id === "c") {
-            pantalla.innerHTML = "0"; // Usamos innerHTML para manejar el salto de línea
-            operacionActual = ""; // Resetear operación
-            return;
+        switch (boton.id) {
+            case 'c':
+                limpiar();
+                break;
+            case 'borrar':
+                borrar();
+                break;
+            case 'igual':
+                calcular();
+                break;
+            case 'sum':
+            case 'res':
+            case 'multi':
+            case 'dividir':
+                seleccionarOperador(botonApretado);
+                break;
+            case 'deci':
+                ingresarNumero('.');
+                break;
+            default: // Números
+                if (/[0-9]/.test(botonApretado)) {
+                    ingresarNumero(botonApretado);
+                }
+                break;
         }
-
-        // Borrar el último carácter si se presiona 'Borrar'
-        if (boton.id === "borrar") {
-            pantalla.textContent = (pantalla.textContent.length === 1 || pantalla.textContent === "Error!")
-                ? "0"
-                : pantalla.textContent.slice(0, -1);
-            operacionActual = pantalla.textContent; // Actualizar la operación actual
-            return;
-        }
-
-        // Calcular el resultado si se presiona '='
-        if (boton.id === "igual") {
-            try {
-                const resultado = eval(operacionActual); // Calcular el resultado
-                pantalla.innerHTML = `<span class="operacion">${operacionActual}</span> <br> ${resultado}`; // Mostrar operación con estilo
-            } catch {
-                pantalla.textContent = "Error!";
-            }
-            return;
-        }
-
-        // Si se está mostrando "0" o "Error!", se reemplaza con el nuevo valor
-        if (pantalla.textContent === "0" || pantalla.textContent === "Error!") {
-            pantalla.textContent = botonApretado;
-        } else {
-            pantalla.textContent += botonApretado; // Añadir el botón apretado a la pantalla
-        }
-
-        // Actualizar la operación actual
-        operacionActual = pantalla.textContent;
     });
 });
+
+// Inicializar la pantalla
+limpiar();
